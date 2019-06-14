@@ -42,6 +42,9 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
       CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      Tags:
+        - Key: Name
+          Value: !Ref 'AWS::StackName'
 
   # Two public subnets, where containers can have public IP addresses
   PublicSubnetOne:
@@ -54,6 +57,9 @@ Resources:
       VpcId: !Ref 'VPC'
       CidrBlock: !FindInMap ['SubnetConfig', 'PublicOne', 'CIDR']
       MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Join ["", [!Ref 'AWS::StackName', '-pub-1']]
   PublicSubnetTwo:
     Type: AWS::EC2::Subnet
     Properties:
@@ -64,6 +70,9 @@ Resources:
       VpcId: !Ref 'VPC'
       CidrBlock: !FindInMap ['SubnetConfig', 'PublicTwo', 'CIDR']
       MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Join ["", [!Ref 'AWS::StackName', '-pub-2']]
 
   # Two private subnets where containers will only have private
   # IP addresses, and will only be reachable by other members of the
@@ -77,6 +86,9 @@ Resources:
          - Fn::GetAZs: {Ref: 'AWS::Region'}
       VpcId: !Ref 'VPC'
       CidrBlock: !FindInMap ['SubnetConfig', 'PrivateOne', 'CIDR']
+      Tags:
+        - Key: Name
+          Value: !Join ["", [!Ref 'AWS::StackName', '-pri-1']]
   PrivateSubnetTwo:
     Type: AWS::EC2::Subnet
     Properties:
@@ -86,6 +98,9 @@ Resources:
          - Fn::GetAZs: {Ref: 'AWS::Region'}
       VpcId: !Ref 'VPC'
       CidrBlock: !FindInMap ['SubnetConfig', 'PrivateTwo', 'CIDR']
+      Tags:
+        - Key: Name
+          Value: !Join ["", [!Ref 'AWS::StackName', '-pri-2']]
 
   # Setup networking resources for the public subnets. Containers
   # in the public subnets have public IP addresses and the routing table
@@ -451,7 +466,7 @@ Outputs:
     Export:
       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicListener' ] ]
   PrivateListener:
-    Description: The ARN of the public load balancer's Listener
+    Description: The ARN of the private load balancer's Listener
     Value: !Ref PrivateLoadBalancerListener
     Export:
       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateListener' ] ]
